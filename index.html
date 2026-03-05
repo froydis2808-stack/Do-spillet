@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Do-spillet Dassavisa NMBU</title>
+<title>Do-spillet NMBU</title>
 
 <style>
 body {
@@ -20,7 +20,7 @@ body {
     background: white;
     overflow: hidden;
     border-bottom: 4px solid black;
-    margin-top: 40px; /* Flytter spillet lengre ned */
+    margin-top: 40px; /* Flytter spillet ned */
 }
 
 #player {
@@ -37,7 +37,7 @@ body {
     position: absolute;
     bottom: 0;
     width: 70px;
-    height: 90px; /* standard lavere høyde */
+    height: 90px;
     background: url("Urbygg.png") no-repeat center;
     background-size: contain;
 }
@@ -54,6 +54,16 @@ input {
 #leaderboard {
     margin-top: 15px;
 }
+
+.character-select img {
+    border: 2px solid transparent;
+    cursor: pointer;
+    margin: 3px;
+}
+
+.character-select input:checked + img {
+    border-color: #007BFF;
+}
 </style>
 </head>
 
@@ -63,6 +73,24 @@ input {
 
 <div id="startScreen">
     <input type="text" id="username" placeholder="Skriv navnet ditt">
+    
+    <h4>Velg karakter:</h4>
+    <div class="character-select">
+        <label>
+            <input type="radio" name="character" value="hode.png" checked>
+            <img src="hode.png" width="50">
+        </label>
+        <label>
+            <input type="radio" name="character" value="hode2.png">
+            <img src="hode2.png" width="50">
+        </label>
+        <label>
+            <input type="radio" name="character" value="hode3.png">
+            <img src="hode3.png" width="50">
+        </label>
+    </div>
+    
+    <br>
     <button onclick="startGame()">Start</button>
 </div>
 
@@ -73,7 +101,7 @@ input {
 </div>
 
 <div id="gameOverScreen" style="display:none;">
-    <h3>Du tapte!:( Nå kan du tisse og bæsje i fred<3</h3>
+    <h3>Du tapte:( Nå skal du få tisse og bæsje i fred<3</h3>
     <button onclick="restartGame()">Try Again</button>
 </div>
 
@@ -88,7 +116,7 @@ let scoreDisplay = document.getElementById("score");
 
 let isJumping = false;
 let velocity = 0;
-let gravity = 0.6; // redusert tyngdekraft for lengre luft
+let gravity = 0.6; // redusert tyngdekraft
 let score = 0;
 let speed = 6;
 let username = "";
@@ -104,6 +132,10 @@ function startGame() {
         alert("Du må skrive navn!");
         return;
     }
+
+    // Sett valgt karakter
+    const selected = document.querySelector('input[name="character"]:checked').value;
+    player.style.backgroundImage = `url(${selected})`;
 
     document.getElementById("startScreen").style.display = "none";
     document.getElementById("gameOverScreen").style.display = "none";
@@ -245,5 +277,4 @@ loadLeaderboard();
 </script>
 
 </body>
-
 </html>
