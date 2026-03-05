@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Do-spillet NMBU</title>
+<title>Do-spillet Dassavisa NMBU</title>
 
 <style>
 body {
@@ -37,7 +37,7 @@ body {
     position: absolute;
     bottom: 0;
     width: 70px;
-    height: 90px;
+    height: 90px; /* standard lavere høyde */
     background: url("Urbygg.png") no-repeat center;
     background-size: contain;
 }
@@ -59,9 +59,11 @@ input {
     border: 2px solid transparent;
     cursor: pointer;
     margin: 3px;
+    border-radius: 5px;
+    width: 50px;
 }
 
-.character-select input:checked + img {
+.character-select img.selected {
     border-color: #007BFF;
 }
 </style>
@@ -76,22 +78,13 @@ input {
     
     <h4>Velg karakter:</h4>
     <div class="character-select">
-        <label>
-            <input type="radio" name="character" value="hode.png" checked>
-            <img src="hode.png" width="50">
-        </label>
-        <label>
-            <input type="radio" name="character" value="hode2.png">
-            <img src="hode2.png" width="50">
-        </label>
-        <label>
-            <input type="radio" name="character" value="hode3.png">
-            <img src="hode3.png" width="50">
-        </label>
+        <img src="hode.png" data-img="hode.png" class="char-img selected">
+        <img src="hode2.png" data-img="hode2.png" class="char-img">
+        <img src="hode3.png" data-img="hode3.png" class="char-img">
     </div>
     
     <br>
-    <button onclick="startGame()">Start</button>
+    <button id="startBtn">Start</button>
 </div>
 
 <h3>Score: <span id="score">0</span></h3>
@@ -108,7 +101,6 @@ input {
 <div id="leaderboard"></div>
 
 <script>
-
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby9ayYOV5UwhU2ZnDVI9Tt_FyjyCor7mZELD1aWr9Pj2s99In9VrDyUKlbs4IpeRowanA/exec";
 
 let player = document.getElementById("player");
@@ -116,7 +108,7 @@ let scoreDisplay = document.getElementById("score");
 
 let isJumping = false;
 let velocity = 0;
-let gravity = 0.6; // redusert tyngdekraft
+let gravity = 0.6;
 let score = 0;
 let speed = 6;
 let username = "";
@@ -124,18 +116,31 @@ let username = "";
 let gameInterval;
 let obstacleInterval;
 
-function startGame() {
+// Karaktervalg
+let selectedCharacter = "hode.png";
 
-    username = document.getElementById("username").value;
+document.querySelectorAll('.char-img').forEach(img => {
+    const selectChar = () => {
+        document.querySelectorAll('.char-img').forEach(i => i.classList.remove('selected'));
+        img.classList.add('selected');
+        selectedCharacter = img.dataset.img;
+    };
+    img.addEventListener('click', selectChar);
+    img.addEventListener('touchstart', e => {
+        e.preventDefault();
+        selectChar();
+    });
+});
 
+// Start-knapp
+document.getElementById('startBtn').addEventListener('click', () => {
+    username = document.getElementById('username').value;
     if (!username) {
         alert("Du må skrive navn!");
         return;
     }
 
-    // Sett valgt karakter
-    const selected = document.querySelector('input[name="character"]:checked').value;
-    player.style.backgroundImage = `url(${selected})`;
+    player.style.backgroundImage = `url(${selectedCharacter})`;
 
     document.getElementById("startScreen").style.display = "none";
     document.getElementById("gameOverScreen").style.display = "none";
@@ -149,16 +154,18 @@ function startGame() {
 
     gameInterval = setInterval(updateGame, 20);
     obstacleInterval = setInterval(createObstacle, 2000);
-}
+});
 
 function restartGame() {
-    startGame();
+    // Beholder samme karakter
+    document.getElementById("startScreen").style.display = "block";
+    document.getElementById("gameOverScreen").style.display = "none";
 }
 
 function jump() {
     if (!isJumping) {
         isJumping = true;
-        velocity = 22; // høyere hopp
+        velocity = 22;
     }
 }
 
@@ -169,7 +176,6 @@ document.addEventListener("keydown", e => {
 document.addEventListener("touchstart", jump);
 
 function updateGame() {
-
     velocity -= gravity;
     let bottom = parseFloat(player.style.bottom) || 0;
     bottom += velocity;
@@ -192,11 +198,9 @@ function updateGame() {
 }
 
 function createObstacle() {
-
     let obstacle = document.createElement("div");
     obstacle.classList.add("obstacle");
 
-    // Varying height mellom 70 og 120 px
     let obstacleHeight = Math.floor(Math.random() * 50) + 70;
     obstacle.style.height = obstacleHeight + "px";
 
@@ -216,7 +220,6 @@ function createObstacle() {
 }
 
 function checkCollision() {
-
     let playerRect = player.getBoundingClientRect();
     let obstacles = document.querySelectorAll(".obstacle");
 
@@ -234,7 +237,6 @@ function checkCollision() {
 }
 
 async function gameOver() {
-
     clearInterval(gameInterval);
     clearInterval(obstacleInterval);
 
@@ -253,7 +255,6 @@ function clearObstacles() {
 }
 
 async function loadLeaderboard() {
-
     const leaderboard = document.getElementById("leaderboard");
 
     try {
