@@ -271,7 +271,7 @@ async function loadLeaderboard() {
         data.forEach((entry, index) => {
             leaderboard.innerHTML +=
                 (index + 1) + ". " + entry[0] +
-                " - " + entry[1] + "<br> m";
+                " - " + entry[1] + " m" + "<br>";
         });
     } catch (err) {
         leaderboard.innerHTML = "Kunne ikke laste toppliste ennå.";
@@ -284,6 +284,7 @@ loadLeaderboard();
 
 </body>
 </html>
+
 
 
 
